@@ -1,5 +1,6 @@
 package com.miliancode;
 
+import ch.qos.logback.core.pattern.color.GreenCompositeConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class Main {
     }
 
     record NewCustomerRequest(String name, String email, Integer age){
+    }
+
+    record UpdateCustomerEmail(String email){
 
     }
 
@@ -34,6 +38,18 @@ public class Main {
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setAge(request.age());
+        customerRepository.save(customer);
+    }
+
+    @DeleteMapping("{customerId}")
+    public void deleteCustomer(@PathVariable("customerId") Integer id){
+        customerRepository.deleteById(id);
+    }
+
+    @PutMapping("{customerId}")
+    public void updateCustomer(@PathVariable("customerId") Integer id, @RequestBody UpdateCustomerEmail update){
+        Customer customer = customerRepository.findById(id).orElseThrow();
+        customer.setEmail(update.email);
         customerRepository.save(customer);
     }
 }
